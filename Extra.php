@@ -23,9 +23,16 @@ class Extra implements Plugin{
         }
 
         public function init() {
-                $this->api->console->register("heal", "Heal a User", array($this, "heal"));
-                $this->api->console->register
+		foreach($this->config['commandjson']['commands'] as $key=>$value)
+		{
+                	$this->api->console->register($key, $value, array($this, "handler"));
+		}
         }
+
+	public function handler($cmd, $params, $issuer, $alias)
+	{
+		console("Command: ".$cmd);
+	}
 
 
 
