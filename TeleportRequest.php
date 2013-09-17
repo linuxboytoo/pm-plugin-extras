@@ -24,16 +24,15 @@ class TeleportRequest implements Plugin{
         public function init() {
 		$this->loadJSON('requests');
 		$this->api->console->register("testing","",array($this, "testing"));
-		$this->api->console->register("tpa", "Request to be teleported to another user", array($this, "handler"));
-		$this->api->console->register("tphere", "Request to teleport a user to you", array($this, "handler"));
-		$this->api->console->register("tpaccept", "Accept a teleport request", array($this, "handler"));
-		$this->api->console->register("tpdeny", "Deny a teleport request", array($this, "handler"));
+
+		$this->api->console->register("tpa", "Request to be teleported to another user", array($this, "handler"));	$this->api->ban->cmdwhitelist("tpa");		
+		$this->api->console->register("tphere", "Request to teleport a user to you", array($this, "handler"));		$this->api->ban->cmdwhitelist("tphere");
+		$this->api->console->register("tpaccept", "Accept a teleport request", array($this, "handler"));		$this->api->ban->cmdwhitelist("tpaccept");
+		$this->api->console->register("tpdeny", "Deny a teleport request", array($this, "handler"));			$this->api->ban->cmdwhitelist("tpdeny");
 
 		$this->config['lang']['command']['tpa'] = 'teleport to';
 		$this->config['lang']['command']['tphere'] = 'summon';	
 	}
-
-	public function testing($cmd,$params,$issuer,$alias) { $player = $this->api->player->get("linuxboytoo"); $player->teleport($player->username,$issuer->username); }
 
 	public function handler($cmd, $params, $issuer, $alias) {
 
@@ -53,16 +52,27 @@ class TeleportRequest implements Plugin{
                                 $this->api->chat->sendTo(false, "TPA> ".$user['issuer']." has accepted your request.",$this->config['requests'][$user['issuer']]['requester']);	
 				
 				$player = $this->api->player->get($this->config['requests'][$user['issuer']]['requester']);
-				if($this->config['requests'][$user['issuer']]['cmd']=='tpa') 	{ $this->api->player->teleport($player->username,$user['issuer']); }
-				if($this->config['requests'][$user['issuer']]['cmd']=='tphere') { $this->api->player->teleport($user['issuer'],$player->username); }
-							
+				if($this->config['requests'][$user['issuer']]['cmd']=='tpa') 	
+				{ 
+					$this->api->player->teleport($player->username,$user['issuer']); 
+					$this->api->chat->sendTo(false,"TPA> Teleported",$user['issuer']); 
+					$this->api->chat->sendTo(false,"TPA> Teleported",$player->username);
+					unset($this->config['requests'][$user['issuer']]);
+				}
+				if($this->config['requests'][$user['issuer']]['cmd']=='tphere') 
+				{ 
+					$this->api->player->teleport($user['issuer'],$player->username); 
+					$this->api->chat->sendTo(false,"TPA> Summoned",$user['issuer']); 
+					$this->api->chat->sendTo(false,"TPA> Summoned",$player->username);
+					unset($this->config['requests'][$user['issuer']]);
+				}			
 				break;
 			case "tpdeny":
 				if(!$this->api->player->get($this->config['requests'][$user['issuer']]['requester']) instanceof Player) { return "Requester no longer exists!"; }
 				$this->api->chat->sendTo(false, "TPA> ".$user['issuer']." has rejected your request.",$this->config['requests'][$user['issuer']]['requester']);
 				break;
 			default:
-				return "[TPA] Invalid Command";
+				return "TPA> Invalid Command";
 				break;
 		}	
 		$this->saveJSON('requests');
