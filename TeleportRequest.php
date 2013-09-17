@@ -23,8 +23,7 @@ class TeleportRequest implements Plugin{
 
         public function init() {
 		$this->loadJSON('requests');
-		$this->api->console->register("testing","",array($this, "testing"));
-
+		
 		$this->api->console->register("tpa", "Request to be teleported to another user", array($this, "handler"));	$this->api->ban->cmdwhitelist("tpa");		
 		$this->api->console->register("tphere", "Request to teleport a user to you", array($this, "handler"));		$this->api->ban->cmdwhitelist("tphere");
 		$this->api->console->register("tpaccept", "Accept a teleport request", array($this, "handler"));		$this->api->ban->cmdwhitelist("tpaccept");
