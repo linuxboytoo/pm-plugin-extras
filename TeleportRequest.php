@@ -39,17 +39,23 @@ class TeleportRequest implements Plugin{
 	public function handler($cmd, $params, $issuer, $alias) {
 
 		$this->loadJSON('requests');
-		$user["issuer"] = $issuer->username;
-		$user["target"] = $params[0];
+		$user["issuer"] = strtolower($issuer->username);
+		$user["target"] = strtolower($params[0]);
 		
 		switch($cmd) {
 			case "tpa":
 			case "tphere":
+				if(!$this->api->player->get($user['target']) instanceof Player)       { return "Invalid Player"; }
 				$request = $this->logTPARequest($user['issuer'],$user['target'],$cmd);
-				if($request===true) { $this->api->chat->sendTo(false, "TPA> ".$user['issuer']." wants to ".$this->config['lang']['command'][$cmd]." you.\n- /tpaccept to accept\n- /tpdeny to deny.", $user['target']); }
+				if($request===true) 
+				{ 
+					$this->api->chat->sendTo(false, "TPA> ".$user['issuer']." wants to ".$this->config['lang']['command'][$cmd]." you.\n- /tpaccept to accept\n- /tpdeny to deny.", $user['target']); 
+					$this->api->chat->sendTo(false, "TPA> Request Sent", $user['issuer']); 
+				}
 				else { return $request; }
 				break;
 			case "tpaccept":
+				if(!isset($this->config['requests'][$user['issuer']])) { return "No Pending Requests"; }
                                 if(!$this->api->player->get($this->config['requests'][$user['issuer']]['requester']) instanceof Player) { return "Requester no longer exists!"; }
                                 $this->api->chat->sendTo(false, "TPA> ".$user['issuer']." has accepted your request.",$this->config['requests'][$user['issuer']]['requester']);	
 				
