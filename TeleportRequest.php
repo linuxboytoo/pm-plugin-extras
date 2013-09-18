@@ -2,7 +2,7 @@
 /*
 __PocketMine Plugin__
 name=TeleportRequest
-version=0.0.1
+version=0.0.2
 description=Plugin to allow users to teleport to other users via a request system
 author=linuxboytoo
 class=TeleportRequest
@@ -28,6 +28,9 @@ class TeleportRequest implements Plugin{
 		$this->api->console->register("tphere", "Request to teleport a user to you", array($this, "handler"));		$this->api->ban->cmdwhitelist("tphere");
 		$this->api->console->register("tpaccept", "Accept a teleport request", array($this, "handler"));		$this->api->ban->cmdwhitelist("tpaccept");
 		$this->api->console->register("tpdeny", "Deny a teleport request", array($this, "handler"));			$this->api->ban->cmdwhitelist("tpdeny");
+
+		$this->api->console->alias('tpac', 'tpaccept');
+		$this->api->console->alias('tpde', 'tpdeny');
 
 		$this->config['lang']['command']['tpa'] = 'teleport to';
 		$this->config['lang']['command']['tphere'] = 'summon';	
